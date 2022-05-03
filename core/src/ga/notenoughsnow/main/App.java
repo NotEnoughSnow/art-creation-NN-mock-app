@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -18,12 +19,17 @@ public class App extends ApplicationAdapter {
 
     public static OrthographicCamera camera;
     public ShapeRenderer shapeRenderer;
-    
+    public ShapeRenderer GUI_shapeRenderer;
 
-    public static int width = 80;
-    public static int height = 80;
+
+    public static int width = 60;
+    public static int height = 60;
     public static int block = 10;
-     
+    
+    public static int screen_width = 800;
+    public static int screen_height = 800;
+    public static int GUI_height = 200;
+
 
     
     static ArrayList<Node> grid = new ArrayList<Node>();
@@ -37,12 +43,15 @@ public class App extends ApplicationAdapter {
 	@Override
 	public void create () { 
 
-		camera = new OrthographicCamera(800,800);
-		camera.position.x = 400;
-		camera.position.y = 400;
+		camera = new OrthographicCamera(screen_width,screen_height);
+		camera.zoom = (float)(height*block)/(screen_height - GUI_height);
+		camera.position.x = width*block/2;
+		camera.position.y = height*block/2 - GUI_height/2;
+		
 
 
 	shapeRenderer = new ShapeRenderer();
+	GUI_shapeRenderer = new ShapeRenderer();
 		
 		for (int i = 0; i < width; i= i + 1) 
 			for (int j = 0; j < height; j= j + 1)
@@ -54,18 +63,18 @@ public class App extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render () {
-		ScreenUtils.clear(0, 0, 0, 1);
+	public void render (){
+		ScreenUtils.clear(1, 1, 1, 1);
 				{
 					grid.get(0).signal();
-					grid.get(391).signal();
-					grid.get(6100).signal();
-					grid.get(3600).signal();
 
 					update();
 				}
-					
-
+				GUI_shapeRenderer.begin(ShapeType.Filled);
+				 GUI_shapeRenderer.setColor(Color.GRAY);
+				 GUI_shapeRenderer.rect(0, 0, 800, 200);
+				 
+				 GUI_shapeRenderer.end();
 				camera.update();
 				 shapeRenderer.setProjectionMatrix(camera.combined);
 				 shapeRenderer.begin(ShapeType.Filled);
@@ -77,6 +86,7 @@ public class App extends ApplicationAdapter {
 				 
 				 shapeRenderer.end();
 
+				 
 		        camera.update();
 
 			}
@@ -104,7 +114,7 @@ public class App extends ApplicationAdapter {
 					n.bump();
 				}
 				
-				Gdx.app.log("hi", Integer.toString(active_nodes.size()));
+				//Gdx.app.log("hi", Integer.toString(active_nodes.size()));
 				
 
 				prev_active_nodes.clear();
