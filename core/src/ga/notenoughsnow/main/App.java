@@ -7,23 +7,28 @@ import java.util.Set;
  
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 
-public class App extends ApplicationAdapter {
+public class App extends Game {
 
     public static OrthographicCamera camera;
     public ShapeRenderer shapeRenderer;
     public ShapeRenderer GUI_shapeRenderer;
+    public Stage stage;
+    private Label saturation_label;
+    private float saturation;
+    
+    Envirement env;
 
-
-    public static int width = 60;
-    public static int height = 60;
     public static int block = 10;
     
     public static int screen_width = 800;
@@ -32,46 +37,49 @@ public class App extends ApplicationAdapter {
 
 
     
-    static ArrayList<Node> grid = new ArrayList<Node>();
+    static ArrayList<Neuron> grid = new ArrayList<Neuron>();
 
-    static Set<Node> prev_active_nodes = new HashSet<Node>();
-    static Set<Node> active_nodes = new HashSet<Node>();
-    static Set<Node> next_active_nodes = new HashSet<Node>();
+    static Set<Neuron> prev_active_nodes = new HashSet<Neuron>();
+    static Set<Neuron> active_nodes = new HashSet<Neuron>();
+    static Set<Neuron> next_active_nodes = new HashSet<Neuron>();
+    
 
 	static Random r = new Random();
 	
 	@Override
 	public void create () { 
-
+		
+		
+		setScreen(new Sandbox(this));
+	
+		
+        stage = new Stage();
+        saturation_label = new Label("", new Label.LabelStyle(new BitmapFont(),Color.WHITE));
+        saturation_label.setPosition(0,10);
+        
+        stage.addActor(saturation_label);
+        
+        
 		camera = new OrthographicCamera(screen_width,screen_height);
-		camera.zoom = (float)(height*block)/(screen_height - GUI_height);
-		camera.position.x = width*block/2;
-		camera.position.y = height*block/2 - GUI_height/2;
-		
+		camera.zoom = (float)(Envirement.height*block)/(screen_height - GUI_height);
+		camera.position.x = Envirement.width*block/2;
+		camera.position.y = Envirement.height*block/2 - GUI_height*camera.zoom/2;
 
-
-	shapeRenderer = new ShapeRenderer();
-	GUI_shapeRenderer = new ShapeRenderer();
+		shapeRenderer = new ShapeRenderer();
+		GUI_shapeRenderer = new ShapeRenderer();
 		
-		for (int i = 0; i < width; i= i + 1) 
-			for (int j = 0; j < height; j= j + 1)
-				grid.add(new Node(i,j));
-		
-		for ( Node n : grid)
-			n.add_weights();
 		
 	}
 
 	@Override
 	public void render (){
-		ScreenUtils.clear(1, 1, 1, 1);
-				{
-					grid.get(0).signal();
-
-					update();
-				}
+		super.render();
+		
+				
+				update();
+				
 				GUI_shapeRenderer.begin(ShapeType.Filled);
-				 GUI_shapeRenderer.setColor(Color.GRAY);
+				 GUI_shapeRenderer.setColor(Color.BLACK);
 				 GUI_shapeRenderer.rect(0, 0, 800, 200);
 				 
 				 GUI_shapeRenderer.end();
@@ -79,58 +87,64 @@ public class App extends ApplicationAdapter {
 				 shapeRenderer.setProjectionMatrix(camera.combined);
 				 shapeRenderer.begin(ShapeType.Filled);
 				 
-				 for (Node n : grid) {
-					 shapeRenderer.setColor(n.color/255f, 0/255f, 0/255f, 1);
+				 for (Neuron n : grid) {
+					 shapeRenderer.setColor(n.color);
 					 shapeRenderer.box(n.grid_pos.x*block, n.grid_pos.y*block, 0, block, block, 0);
 				 }
 				 
 				 shapeRenderer.end();
-
+				 
 				 
 		        camera.update();
+		        stage.act();
+		        stage.draw();
+		        
 
 			}
 			
-			int i = 0 ;
-			
+			private int i = 0 ;
+		    private int label_control;
+
 			public void update() {
 				
-				if (i%60 == 0) {
-					for ( Node n : grid ) {
+				if (i > 60) {
+					for ( Neuron n : grid ) {
 						for ( Weight w : n.targets) {
 							//if (w.value > 0) w.value = w.value / 2f;
 						}
 					}
+					i = 0;
 				}
 				
-				i++;
 				
 
-				for(Node n : prev_active_nodes) {
+				for(Neuron n : prev_active_nodes) {
 					n.disable();
 				}
 
-				for(Node n : active_nodes) {
+				for(Neuron n : active_nodes) {
 					n.bump();
 				}
 				
-				//Gdx.app.log("hi", Integer.toString(active_nodes.size()));
+				saturation = (float)active_nodes.size()/Envirement.space_size;
 				
+
+		        if ( label_control>5) {
+		        	saturation_label.setText(String.format("Saturation : %f", saturation));
+		        	label_control = 0;
+		        }
+
 
 				prev_active_nodes.clear();
-				
-				
 				prev_active_nodes.addAll(active_nodes);
-				
-
 				active_nodes.clear();
 				active_nodes.addAll(next_active_nodes);
-				
-
-				
 				next_active_nodes.clear();
 				
+				i++;
+				label_control++;
 				
+
 	}
 	
 	@Override

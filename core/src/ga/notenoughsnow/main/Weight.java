@@ -4,12 +4,12 @@ public class Weight {
 	
 	float value;
 	float threshhold = 1;
-	Node target;
+	Neuron target;
 	
-	public Weight(Node target) {
+	public Weight(Neuron target) {
 		
 		this.target = target;
-		value = App.r.nextFloat(0f, 0.6f);
+		value = App.r.nextFloat(0.1f, 0.5f);
 		
 	}
 

@@ -4,29 +4,30 @@ package ga.notenoughsnow.main;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
-public class Node {
+public class Neuron extends NeuronType {
 	
-	Vector2 grid_pos;
 	boolean active;
-	int color = 0;
-	int dist = 20;
-	int neighbor_max = 5;
-	int neighbor_range = 5;
+	Color color = new Color(8/255f,8/255f,8/255f,1);
+	
 
 	ArrayList<Weight> targets = new ArrayList<Weight>();
 	
 	
-	public Node(int x,int y) {
+	public Neuron(int x,int y,int dist,int n_count,int n_range) {
 		
 		grid_pos = new Vector2(x,y);
+		this.dist = dist;
+		this.neighbor_max = n_count;
+		this.neighbor_range = n_range;
+		
 		active = false;
 		  
 	}
 	
 	public void add_weights() {
-		
 		
 		
 		Vector2 target = connect(App.r,grid_pos,dist);
@@ -44,15 +45,15 @@ public class Node {
 		do {
 			target.x = (int) ((r.nextInt(2*dist+1)-dist) + start.x);
 			
-		} while(!(target.x >=0 && target.x < App.width));
+		} while(!(target.x >=0 && target.x < Envirement.width));
 		
 		do {
 			target.y = (int) ((r.nextInt(2*dist+1)-dist) + start.y);
 			
-		} while(!(target.y >=0 && target.y < App.height));
+		} while(!(target.y >=0 && target.y < Envirement.height));
 		 
 		
-		Node target_node =  App.grid.get((int) (target.x*App.width+target.y));
+		Neuron target_node =  App.grid.get((int) (target.x*Envirement.width+target.y));
 		targets.add(new Weight(target_node));
 		
 		return target;
@@ -76,15 +77,15 @@ public class Node {
 		
 	}
 
-	public void signal(Node target) {
-		color = 255;
+	public void signal(Neuron target) {
+		color.set(255/255f,0,100/255f,1);
 		active = true;
 			App.next_active_nodes.add(target);
 		
 	}
 	
 	public void signal() {
-		color = 255;
+		color.set(1,0,0,1);
 		active = true;
 			for ( Weight w : targets)
 			App.next_active_nodes.add(w.target);
@@ -92,7 +93,7 @@ public class Node {
 	}
 	
 	public void disable() {
-		color = 50;
+		color.set(85/255f,50/255f,60/255f,1);
 		active = false;
 		
 
