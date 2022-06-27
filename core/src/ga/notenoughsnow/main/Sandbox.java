@@ -11,18 +11,18 @@ public class Sandbox implements Screen {
 	public Sandbox(App app) {
 		this.app = app;
 		
-		NeuronInfo n_info = new NeuronInfo(20,5,5);
+		NeuronInfo n_info = new NeuronInfo(30,3,3);
 		
 		new Envirement(60,60,n_info);
 		
-		inGen = new InputGenerator(InputType.InputSource.LEFT,InputType.SignalFrequency.UNIFORM,50);
+	  inGen = new InputGenerator(InputType.InputSource.LEFT,InputType.SignalFrequency.UNIFORM,100);
 		
 		//inGen = new InputGenerator();
-		//inGen.addPoint(0, 0,1);
+	   //inGen.addPoint(20, 30,1);
 		//inGen.addPoint(0, 1,1);
 
 	}
-
+	
 	
 	@Override
 	public void render(float delta) {

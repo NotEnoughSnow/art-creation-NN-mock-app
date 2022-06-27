@@ -2,7 +2,9 @@ package ga.notenoughsnow.main;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -12,8 +14,8 @@ public class Neuron extends NeuronType {
 	boolean active;
 	Color color = new Color(8/255f,8/255f,8/255f,1);
 	
-
-	ArrayList<Weight> targets = new ArrayList<Weight>();
+	
+	Set<Weight> targets = new HashSet<Weight>();
 	
 	
 	public Neuron(int x,int y,int dist,int n_count,int n_range) {

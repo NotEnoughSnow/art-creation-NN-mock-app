@@ -1,21 +1,32 @@
 package ga.notenoughsnow.main;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
- 
+
+import javax.swing.JFrame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
+
+import info.monitorenter.gui.chart.Chart2D;
+import info.monitorenter.gui.chart.ITrace2D;
+import info.monitorenter.gui.chart.traces.Trace2DLtd;
+import info.monitorenter.gui.chart.traces.Trace2DSimple;
+
 
 
 public class App extends Game {
@@ -45,6 +56,8 @@ public class App extends Game {
     
 
 	static Random r = new Random();
+	public ArrayList<Vector2> graph_data = new ArrayList<Vector2>();
+
 	
 	@Override
 	public void create () { 
@@ -68,15 +81,51 @@ public class App extends Game {
 		shapeRenderer = new ShapeRenderer();
 		GUI_shapeRenderer = new ShapeRenderer();
 		
+	
+
+	}
+	
+	
+
+	public void graph() {
 		
+		
+	            // Create a chart:  
+			    Chart2D chart = new Chart2D();
+			    // Create an ITrace: 
+			    ITrace2D trace = new Trace2DSimple(); 
+			    // Add the trace to the chart. This has to be done before adding points (deadlock prevention): 
+			    chart.addTrace(trace); 
+			    
+				Collections.reverse(graph_data);
+
+			    for(Vector2 v : graph_data){
+			      trace.addPoint(v.x,v.y);
+			    }
+		
+		    JFrame frame = new JFrame("MinimalDynamicChart");
+		    // add the chart to the frame: 
+		    frame.getContentPane().add(chart);
+		    frame.setSize(800,600);
+
+		    frame.setVisible(true);
 	}
 
+	int time = 0;
+	
 	@Override
 	public void render (){
 		super.render();
 		
-				
+
 				update();
+				
+				
+				if(graph_data.size()<1500) graph_data.add(new Vector2(time,saturation));
+				
+				if(Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+					graph();
+				}
 				
 				GUI_shapeRenderer.begin(ShapeType.Filled);
 				 GUI_shapeRenderer.setColor(Color.BLACK);
@@ -130,7 +179,7 @@ public class App extends Game {
 				
 
 		        if ( label_control>5) {
-		        	saturation_label.setText(String.format("Saturation : %f", saturation));
+		        	saturation_label.setText(String.format("Saturation : %.4f", saturation));
 		        	label_control = 0;
 		        }
 
@@ -143,7 +192,7 @@ public class App extends Game {
 				
 				i++;
 				label_control++;
-				
+				time++;
 
 	}
 	

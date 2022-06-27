@@ -63,6 +63,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        
+        implementation group: 'com.googlecode.charts4j', name: 'charts4j', version: '1.3'
     }
 }
